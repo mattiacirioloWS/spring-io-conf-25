@@ -1,0 +1,13 @@
+.about-page {
+    font-size: 1.125rem;
+    line-height: 1.7;
+    color: var(--clr-fg, #333);
+}
+
+.about-page p {
+    margin-bottom: 1rem;
+}
+
+.about-page strong {
+    color: var(--clr-accent, #0d9488);
+}

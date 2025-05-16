@@ -1,0 +1,16 @@
+{
+  "name": "spring-io-conf",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "@sveltejs/kit": "^2.x.x",
+    "svelte": "^5.x.x",
+    "vite": "^6.x.x"
+  }
+}
