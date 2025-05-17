@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
 class OrderRepositoryImpl implements OrderRepository {
@@ -38,6 +39,22 @@ class OrderRepositoryImpl implements OrderRepository {
     public Order save(Order order) {
         OrderEntity savedOrder = orderJpaRepository.save(orderEntityMapper.fromAggregate(order));
         return toAggregate(savedOrder);
+    }
+
+    @Override
+    public void saveAll(List<Order> orders) {
+        List<OrderEntity> entities = orders.stream()
+                .map(orderEntityMapper::fromAggregate)
+                .toList();
+        orderJpaRepository.saveAll(entities);
+    }
+
+    @Override
+    public List<Order> findPendingOrdersHavingItem(UUID itemId) {
+        return orderJpaRepository.findAllByStatusAndItemsItemId(OrderStatus.pending(), new ItemId(itemId))
+                .stream()
+                .map(this::toAggregate)
+                .toList();
     }
 
     private Order toAggregate(OrderEntity orderEntity) {

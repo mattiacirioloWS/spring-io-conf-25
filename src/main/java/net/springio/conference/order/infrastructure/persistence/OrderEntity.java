@@ -4,12 +4,13 @@ import jakarta.persistence.*;
 import net.springio.conference.order.domain.AttendeeId;
 import net.springio.conference.order.domain.OrderId;
 import net.springio.conference.order.domain.OrderStatus;
+import net.springio.conference.shared.infrastructure.EntityWithEvents;
 
 import java.util.List;
 
 @Entity
 @Table(name = "orders")
-public class OrderEntity {
+public class OrderEntity extends EntityWithEvents<OrderEntity> {
     @EmbeddedId
     @AttributeOverride(name = "uuid", column = @Column(name = "id"))
     private OrderId id;
