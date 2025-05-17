@@ -5,3 +5,10 @@ CREATE TABLE sessions
     speakers VARCHAR(500)   NOT NULL,
     price    DECIMAL(10, 2) NOT NULL
 );
+
+CREATE TABLE attendees
+(
+    id         UUID PRIMARY KEY,
+    first_name VARCHAR(255) NOT NULL,
+    last_name  VARCHAR(255) NOT NULL
+);

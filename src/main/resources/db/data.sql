@@ -38,3 +38,8 @@ VALUES (UUID(), 'Null Safety in Java with JSpecify and NullAway', 'Liam Carter',
        (UUID(), 'Life with Spring Boot inside a Monorepo', 'Tanner Brooks, Holden James', 46.00),
        (UUID(), 'You don''t need Elasticsearch! Fuzzy Search with PostgreSQL and Spring Data', 'Paxton Reed', 45.00),
        (UUID(), 'Handling 400000+ visitors at the world''s largest physics lab (CERN)', 'Keegan Harper', 50.00);
+
+INSERT INTO attendees (id, first_name, last_name)
+VALUES (UUID(), 'Frank', 'Uetliberg'),
+       (UUID(), 'Geovanni', 'Blanche'),
+       (UUID(), 'Roberto', 'Rivas');

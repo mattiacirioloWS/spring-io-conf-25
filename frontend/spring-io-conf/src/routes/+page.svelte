@@ -1,11 +1,12 @@
 <script>
     import {onMount} from 'svelte';
     import EditablePrice from '$lib/EditablePrice.svelte';
-
+    import AttendeeSelect from '$lib/AttendeeSelect.svelte';
 
     let sessions = [];
     let search = '';
     let loading = false;
+    let selectedAttendeeId = '';
 
     async function fetchSessions(q = '') {
         loading = true;
@@ -35,6 +36,8 @@
         <h2>Sessions 23 May 2025</h2>
     </header>
     <main class="main">
+        <AttendeeSelect bind:selectedAttendeeId/>
+
         <form class="search-form" on:submit|preventDefault={handleSearch}>
             <input bind:value={search} class="search-form__title" placeholder="Search by title…"/>
             <button class="search-form__submit">Search</button>
