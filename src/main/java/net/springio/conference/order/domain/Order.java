@@ -1,9 +1,6 @@
 package net.springio.conference.order.domain;
 
-import net.springio.conference.order.domain.event.OrderCompleted;
-import net.springio.conference.order.domain.event.OrderItemAddedEvent;
-import net.springio.conference.order.domain.event.OrderItemPriceUpdatedEvent;
-import net.springio.conference.order.domain.event.OrderItemRemovedEvent;
+import net.springio.conference.order.domain.event.*;
 import net.springio.conference.shared.domain.AggregateRootWithDomainEvents;
 import net.springio.conference.shared.domain.Price;
 import org.jmolecules.ddd.annotation.AggregateRoot;
@@ -11,6 +8,7 @@ import org.jmolecules.ddd.annotation.Identity;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @AggregateRoot
 public final class Order extends AggregateRootWithDomainEvents {
@@ -96,14 +94,19 @@ public final class Order extends AggregateRootWithDomainEvents {
         }
 
         if (isModifiable()) {
+            AtomicInteger updatedCount = new AtomicInteger();
             items.replaceAll(item -> {
                 if (item.getItemId().equals(itemId)) {
                     var newItem = new OrderItem(item.getId(), item.getItemId(), item.getName(), price);
                     registerEvent(new OrderItemPriceUpdatedEvent(id.uuid(), newItem.getId().uuid(), newItem.getPrice()));
+                    updatedCount.incrementAndGet();
                     return newItem;
                 }
                 return item;
             });
+            if (updatedCount.get() > 0) {
+                registerEvent(new OrderTotalChangedEvent(id.uuid(), getTotal()));
+            }
         }
 
     }
@@ -123,5 +126,11 @@ public final class Order extends AggregateRootWithDomainEvents {
 
     private boolean isModifiable() {
         return status.isPending();
+    }
+
+    public Price getTotal() {
+        return items.stream()
+                .map(OrderItem::getPrice)
+                .reduce(Price.ZERO, Price::add);
     }
 }

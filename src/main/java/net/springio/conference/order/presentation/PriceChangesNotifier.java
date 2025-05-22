@@ -1,6 +1,7 @@
 package net.springio.conference.order.presentation;
 
 import net.springio.conference.order.domain.event.OrderItemPriceUpdatedEvent;
+import net.springio.conference.order.domain.event.OrderTotalChangedEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.modulith.events.ApplicationModuleListener;
@@ -44,6 +45,14 @@ public class PriceChangesNotifier implements ApplicationListener<ContextClosedEv
         };
     }
 
+    @ApplicationModuleListener
+    void onOrderTotalChanged(OrderTotalChangedEvent event) {
+        try {
+            orderEmitters.get(event.orderId()).send(SseEmitter.event().name("orderTotalChanged").data(event));
+        } catch (IOException e) {
+            orderEmitters.remove(event.orderId());
+        }
+    }
 
     @Override
     public void onApplicationEvent(ContextClosedEvent event) {

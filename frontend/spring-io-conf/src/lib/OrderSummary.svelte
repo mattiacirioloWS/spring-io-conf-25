@@ -8,11 +8,13 @@
 
     let prevOrderId;
     let changedItems = new Set();
+    let totalChanged = false;
 
     let eventSource;
 
     $: if (order?.id && order.id !== prevOrderId) {
         changedItems = new Set();
+        totalChanged = false;
         prevOrderId = order.id;
     }
 
@@ -57,6 +59,13 @@
                 );
                 changedItems.add(orderItemId);
             });
+
+            eventSource.addEventListener('orderTotalChanged', e => {
+                const {total: {amount: totalAmount}} = JSON.parse(e.data);
+                order.total = totalAmount;
+                totalChanged = true;
+            });
+
         } catch (err) {
             console.error(err);
             order = null;
@@ -99,6 +108,18 @@
                 </li>
             {/each}
         </ul>
+
+        <div class="order-summary__total-row">
+            <div class="order-summary__total-value">
+                <strong>Total:</strong> €{order.total.toFixed(2)}
+                {#if totalChanged}
+                        <span class="price-alert">
+                            Total updated
+                            <button class="close-btn" on:click={() => totalChanged = false}>×</button>
+                        </span>
+                {/if}
+            </div>
+        </div>
     </div>
 {/if}
 
@@ -156,5 +177,18 @@
     .order-summary__loading {
         font-style: italic;
         margin-bottom: 1rem;
+    }
+
+    .order-summary__total-row {
+        display: flex;
+        width: 100%;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .order-summary__total-value {
+        display: inline-flex;
+        justify-content: space-between;
+        align-items: center;
     }
 </style>
