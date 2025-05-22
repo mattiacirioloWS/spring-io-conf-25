@@ -1,4 +1,4 @@
-package net.springio.conference.session.domain;
+package net.springio.conference.shared.domain;
 
 import java.math.BigDecimal;
 

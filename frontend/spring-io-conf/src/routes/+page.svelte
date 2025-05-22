@@ -1,5 +1,7 @@
 <script>
     import {onMount} from 'svelte';
+    import EditablePrice from '$lib/EditablePrice.svelte';
+
 
     let sessions = [];
     let search = '';
@@ -20,6 +22,11 @@
         window.scrollTo({top: 0});
     }
 
+    function handlePriceUpdate({sessionId, price}) {
+        const idx = sessions.findIndex(s => s.id === sessionId);
+        if (idx > -1) sessions[idx].price = price;
+    }
+
     onMount(() => fetchSessions());
 </script>
 
@@ -36,20 +43,26 @@
         {#if loading}<p>Loading…</p>
         {:else if !sessions.length}<p>No sessions found.</p>
         {:else}
-            <table class="sessions-table">
-                <thead>
+            <table class="w-full table-auto border-collapse shadow bg-white">
+                <thead class="bg-gray-800 text-white">
                 <tr>
-                    <th>Title</th>
-                    <th>Speakers</th>
-                    <th>Price</th>
+                    <th class="px-4 py-2">Title</th>
+                    <th class="px-4 py-2">Speakers</th>
+                    <th class="px-4 py-2">Price</th>
                 </tr>
                 </thead>
                 <tbody>
-                {#each sessions as session}
-                    <tr>
-                        <td>{session.title}</td>
-                        <td>{session.speakers}</td>
-                        <td>{session.price}</td>
+                {#each sessions as session (session.id)}
+                    <tr class="hover:bg-gray-50">
+                        <td class="border px-4 py-2">{session.title}</td>
+                        <td class="border px-4 py-2">{session.speakers}</td>
+                        <td class="border px-4 py-2">
+                            <EditablePrice
+                                    sessionId={session.id}
+                                    price={session.price}
+                                    onUpdate={handlePriceUpdate}
+                            />
+                        </td>
                     </tr>
                 {/each}
                 </tbody>

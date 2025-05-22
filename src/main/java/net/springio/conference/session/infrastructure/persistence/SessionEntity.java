@@ -1,14 +1,15 @@
 package net.springio.conference.session.infrastructure.persistence;
 
 import jakarta.persistence.*;
-import net.springio.conference.session.domain.Price;
 import net.springio.conference.session.domain.SessionId;
 import net.springio.conference.session.domain.Speakers;
 import net.springio.conference.session.domain.Title;
+import net.springio.conference.shared.domain.Price;
+import net.springio.conference.shared.infrastructure.EntityWithEvents;
 
 @Entity
 @Table(name = "sessions")
-public class SessionEntity {
+public class SessionEntity extends EntityWithEvents<SessionEntity> {
     @EmbeddedId
     @AttributeOverride(name = "uuid", column = @Column(name = "id"))
     private SessionId id;

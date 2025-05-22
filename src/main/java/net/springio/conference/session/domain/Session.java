@@ -1,18 +1,21 @@
 package net.springio.conference.session.domain;
 
+import net.springio.conference.session.domain.event.PriceChangedEvent;
+import net.springio.conference.shared.domain.AggregateRootWithDomainEvents;
+import net.springio.conference.shared.domain.Price;
 import org.jmolecules.ddd.annotation.AggregateRoot;
-import org.jmolecules.ddd.annotation.Factory;
 import org.jmolecules.ddd.annotation.Identity;
 
 @AggregateRoot
-public class Session {
+public class Session extends AggregateRootWithDomainEvents {
     @Identity
     private final SessionId id;
     private final Title title;
     private final Speakers speakers;
-    private final Price price;
 
-    private Session(SessionId id, Title title, Speakers speakers, Price price) {
+    private Price price;
+
+    Session(SessionId id, Title title, Speakers speakers, Price price) {
         if (id == null) {
             throw new IllegalArgumentException("Id cannot be null");
         }
@@ -48,10 +51,11 @@ public class Session {
         return price;
     }
 
-    @Factory
-    public static final class Builder {
-        public static Session reconstitute(SessionId id, Title title, Speakers speakers, Price price) {
-            return new Session(id, title, speakers, price);
+    public void changePrice(Price price) {
+        if (price == null) {
+            throw new IllegalArgumentException("Price cannot be null");
         }
+        this.price = price;
+        registerEvent(new PriceChangedEvent(id.uuid(), price));
     }
 }

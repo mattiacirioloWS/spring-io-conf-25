@@ -27,7 +27,10 @@ public class FindSessions {
     }
 
     private SessionDto mapToDto(Session session) {
-        return new SessionDto(session.getId().uuid(), session.getTitle().text(), session.getSpeakers().names(), session.getPrice().amount());
+        return new SessionDto(session.getId().uuid(),
+                session.getTitle().text(),
+                session.getSpeakers().names(),
+                session.getPrice().amount());
     }
 
 }
