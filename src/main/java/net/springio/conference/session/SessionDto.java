@@ -1,4 +1,4 @@
-package net.springio.conference.session.application;
+package net.springio.conference.session;
 
 import java.math.BigDecimal;
 import java.util.UUID;
@@ -10,7 +10,7 @@ public class SessionDto {
 
     private BigDecimal price;
 
-    SessionDto(UUID id, String title, String speakers, BigDecimal price) {
+    public SessionDto(UUID id, String title, String speakers, BigDecimal price) {
         this.id = id;
         this.title = title;
         this.speakers = speakers;

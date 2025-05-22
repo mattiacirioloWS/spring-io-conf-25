@@ -1,7 +1,7 @@
 <script>
     import {onMount} from 'svelte';
 
-    export let selectedAttendeeId;
+    export let attendeeId;
     let attendees = [];
     let loading = false;
 
@@ -13,7 +13,7 @@
     });
 
     function handleSelect(event) {
-        selectedAttendeeId = event.target.value;
+        attendeeId = event.target.value;
     }
 </script>
 
@@ -22,7 +22,7 @@
     {#if loading}
         <span class="attendee-select__loading">Loading attendees…</span>
     {:else}
-        <select id="attendee" on:change={handleSelect} bind:value={selectedAttendeeId}
+        <select id="attendee" on:change={handleSelect} bind:value={attendeeId}
                 class="attendee-select__dropdown">
             <option value="" disabled selected>Select an attendee</option>
             {#each attendees as attendee}

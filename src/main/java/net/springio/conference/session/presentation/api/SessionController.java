@@ -1,8 +1,8 @@
 package net.springio.conference.session.presentation.api;
 
+import net.springio.conference.session.SessionDto;
 import net.springio.conference.session.application.ChangePrice;
-import net.springio.conference.session.application.FindSessions;
-import net.springio.conference.session.application.SessionDto;
+import net.springio.conference.session.application.FindSessionsImpl;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
@@ -12,10 +12,10 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/sessions")
 class SessionController {
-    private final FindSessions findSessions;
+    private final FindSessionsImpl findSessions;
     private final ChangePrice changePrice;
 
-    SessionController(FindSessions findSessions, ChangePrice changePrice) {
+    SessionController(FindSessionsImpl findSessions, ChangePrice changePrice) {
         this.findSessions = findSessions;
         this.changePrice = changePrice;
     }

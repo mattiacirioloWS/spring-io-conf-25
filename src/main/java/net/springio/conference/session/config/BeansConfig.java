@@ -1,7 +1,8 @@
 package net.springio.conference.session.config;
 
+import net.springio.conference.session.FindSessions;
 import net.springio.conference.session.application.ChangePrice;
-import net.springio.conference.session.application.FindSessions;
+import net.springio.conference.session.application.FindSessionsImpl;
 import net.springio.conference.session.domain.SessionRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,7 +11,7 @@ import org.springframework.context.annotation.Configuration;
 public class BeansConfig {
     @Bean
     public FindSessions findSessions(SessionRepository sessionRepository) {
-        return new FindSessions(sessionRepository);
+        return new FindSessionsImpl(sessionRepository);
     }
 
     @Bean
