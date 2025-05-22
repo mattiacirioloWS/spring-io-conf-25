@@ -10,12 +10,31 @@
     let changedItems = new Set();
     let totalChanged = false;
 
+    let errorMsg = '';
+
+    let successMessage = '';
+    let successType = '';
+    let buttonsEnabled = true;
+
     let eventSource;
 
     $: if (order?.id && order.id !== prevOrderId) {
         changedItems = new Set();
         totalChanged = false;
+        errorMsg = '';
+        buttonsEnabled = true;
         prevOrderId = order.id;
+    }
+
+    function clearOrder() {
+        order = null;
+        changedItems = new Set();
+        totalChanged = false;
+        errorMsg = '';
+        successMessage = '';
+        successType = '';
+        buttonsEnabled = true;
+        closeSse();
     }
 
     // Parent may manually trigger reload:
@@ -28,19 +47,18 @@
         fetchOrder();
     } else {
         // no attendee: tear down
-        order = null;
-        closeSse();
+        clearOrder();
     }
 
-    onDestroy(closeSse);
+    onDestroy(clearOrder);
 
     async function fetchOrder() {
         loading = true;
-        closeSse();
+        clearOrder();
         try {
             const res = await fetch(`/api/orders/byAttendee/${attendeeId}`);
             if (!res.ok) {
-                order = null;
+                clearOrder();
                 return;
             }
             if (res.status === 204) {
@@ -68,7 +86,7 @@
 
         } catch (err) {
             console.error(err);
-            order = null;
+            clearOrder();
         } finally {
             loading = false;
         }
@@ -85,6 +103,41 @@
         changedItems.delete(itemId);
         changedItems = new Set(changedItems);
     }
+
+    function markSubmitted() {
+        markClosed('Order submitted', 'success');
+    }
+
+    function markCanceled() {
+        markClosed('Order canceled', 'warning');
+    }
+
+    function markClosed(message, type) {
+        successMessage = message;
+        successType = type;
+        buttonsEnabled = false;
+        setTimeout(clearOrder, 3000);
+    }
+
+    async function submitOrder() {
+        try {
+            const res = await fetch(`/api/orders/${order.id}/submit`, {method: 'PUT'});
+            if (!res.ok) throw new Error('Submit failed');
+            markSubmitted();
+        } catch (err) {
+            errorMsg = err.message;
+        }
+    }
+
+    async function cancelOrder() {
+        try {
+            const res = await fetch(`/api/orders/${order.id}/cancel`, {method: 'DELETE'});
+            if (!res.ok) throw new Error('Cancel failed');
+            markCanceled();
+        } catch (err) {
+            errorMsg = err.message;
+        }
+    }
 </script>
 
 {#if loading}
@@ -99,10 +152,10 @@
                         <span>{item.name} — €{item.price.toFixed(2)}</span>
 
                         {#if changedItems.has(item.id)}
-                        <span class="price-alert">
-                            Price updated
-                            <button class="close-btn" on:click={() => dismissAlert(item.id)}>×</button>
-                        </span>
+                            <span class="price-alert">
+                                Price updated
+                                <button class="close-btn" on:click={() => dismissAlert(item.id)}>×</button>
+                            </span>
                         {/if}
                     </div>
                 </li>
@@ -119,7 +172,24 @@
                         </span>
                 {/if}
             </div>
+            <div class="order-actions">
+                <button class="submit-btn" class:disabled={!buttonsEnabled} disabled={!buttonsEnabled}
+                        on:click={submitOrder}>Submit
+                </button>
+                <button class="cancel-btn" class:disabled={!buttonsEnabled} disabled={!buttonsEnabled}
+                        on:click={cancelOrder}>Cancel
+                </button>
+            </div>
         </div>
+        {#if successMessage}
+            <div class="alert alert-{successType}">
+                {successMessage}
+                <button class="close-btn" on:click={clearOrder}>×</button>
+            </div>
+        {/if}
+        {#if errorMsg}
+            <p class="order-error">⚠️ {errorMsg}</p>
+        {/if}
     </div>
 {/if}
 
@@ -190,5 +260,68 @@
         display: inline-flex;
         justify-content: space-between;
         align-items: center;
+    }
+
+    .order-actions {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .order-actions button {
+        padding: 0.25rem 0.75rem;
+        border-radius: 0.25rem;
+        border: 1px solid var(--clr-border);
+        cursor: pointer;
+    }
+
+    .cancel-btn {
+        background: #721c24;
+    }
+
+    .cancel-btn:hover {
+        background: #f5c6cb;
+        color: #721c24;
+    }
+
+    .order-error {
+        color: #842029;
+        background: #f8d7da;
+        border: 1px solid #f5c2c7;
+        padding: 0.5rem;
+        border-radius: 0.25rem;
+        margin-top: 0.5rem;
+    }
+
+    button.disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    .alert {
+        padding: 0.75rem 1rem;
+        border-radius: 0.375rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
+
+    .alert-success {
+        background: #d1e7dd;
+        color: #0f5132;
+        border: 1px solid #badbcc;
+    }
+
+    .alert-warning {
+        background: #fff3cd;
+        color: #664d03;
+        border: 1px solid #ffecb5;
+    }
+
+    .alert .close-btn {
+        background: none;
+        border: none;
+        font-size: 1rem;
+        cursor: pointer;
     }
 </style>

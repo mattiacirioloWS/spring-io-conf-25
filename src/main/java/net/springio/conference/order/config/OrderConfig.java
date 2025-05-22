@@ -24,4 +24,14 @@ public class OrderConfig {
     PriceChangePolicyPort priceChangesHandler(OrderRepository orderRepository) {
         return new PriceChangesHandler(orderRepository);
     }
+
+    @Bean
+    SubmitOrder submitOrder(OrderRepository orderRepository) {
+        return new SubmitOrder(orderRepository);
+    }
+
+    @Bean
+    CancelOrder cancelOrder(OrderRepository orderRepository) {
+        return new CancelOrder(orderRepository);
+    }
 }

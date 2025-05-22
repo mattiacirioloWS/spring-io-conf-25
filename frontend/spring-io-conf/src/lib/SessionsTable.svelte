@@ -72,7 +72,7 @@
                         <AddToCartButton
                                 attendeeId={attendeeId}
                                 sessionId={session.id}
-                                on:orderCreated={onItemAdded}
+                                onOrderCreated={onItemAdded}
                         />
                     </td>
                 {/if}

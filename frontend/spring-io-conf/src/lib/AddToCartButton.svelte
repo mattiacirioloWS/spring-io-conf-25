@@ -1,10 +1,10 @@
 <script>
-    import {createEventDispatcher} from 'svelte';
-
     export let attendeeId;
     export let sessionId;
 
-    const dispatch = createEventDispatcher();
+    export let onOrderCreated = () => {
+    };
+
     let loading = false;
 
     async function handleClick() {
@@ -29,7 +29,7 @@
                 throw new Error(data.detail || 'Failed to add session to the cart');
             }
 
-            dispatch('orderCreated', {orderId: data.orderId});
+            onOrderCreated({orderId: data.orderId});
 
         } catch (err) {
             alert(err.message);

@@ -2,11 +2,9 @@ package net.springio.conference.order.presentation.api;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
-import net.springio.conference.order.application.AddItem;
-import net.springio.conference.order.application.FindOrders;
-import net.springio.conference.order.application.OrderDto;
-import net.springio.conference.order.application.OrderItemDto;
+import net.springio.conference.order.application.*;
 import net.springio.conference.order.presentation.PriceChangesNotifier;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,11 +17,15 @@ import java.util.UUID;
 class OrderController {
     private final AddItem addItem;
     private final FindOrders findOrders;
+    private final SubmitOrder submitOrder;
+    private final CancelOrder cancelOrder;
     private final PriceChangesNotifier itemPriceChangesNotifier;
 
-    OrderController(AddItem addItem, FindOrders findOrders, PriceChangesNotifier itemPriceChangesNotifier) {
+    OrderController(AddItem addItem, FindOrders findOrders, SubmitOrder submitOrder, CancelOrder cancelOrder, PriceChangesNotifier itemPriceChangesNotifier) {
         this.addItem = addItem;
         this.findOrders = findOrders;
+        this.submitOrder = submitOrder;
+        this.cancelOrder = cancelOrder;
         this.itemPriceChangesNotifier = itemPriceChangesNotifier;
     }
 
@@ -49,7 +51,18 @@ class OrderController {
         return itemPriceChangesNotifier.streamItemPriceChanges(orderId);
     }
 
-    record AddItemCommand(@NotNull UUID attendeeId, @NotNull UUID itemId) {
+    @PutMapping("/{orderId}/submit")
+    @ResponseStatus(value = HttpStatus.NO_CONTENT)
+    public void submitOrder(@PathVariable UUID orderId) {
+        submitOrder.execute(orderId);
     }
 
+    @DeleteMapping("/{orderId}/cancel")
+    @ResponseStatus(value = HttpStatus.NO_CONTENT)
+    public void cancelOrder(@PathVariable UUID orderId) {
+        cancelOrder.execute(orderId);
+    }
+
+    record AddItemCommand(@NotNull UUID attendeeId, @NotNull UUID itemId) {
+    }
 }
