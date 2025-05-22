@@ -57,6 +57,11 @@ class OrderRepositoryImpl implements OrderRepository {
                 .toList();
     }
 
+    @Override
+    public Boolean existsInCompletedOrders(ItemId itemId) {
+        return orderJpaRepository.existsByStatusAndItemsItemId(OrderStatus.completed(), itemId);
+    }
+
     private Order toAggregate(OrderEntity orderEntity) {
         return OrderFactory.reconstituteOrder(
                 orderEntity.getId(),

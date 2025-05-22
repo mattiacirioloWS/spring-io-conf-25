@@ -19,4 +19,6 @@ public interface OrderRepository {
     void saveAll(List<Order> orders);
 
     List<Order> findPendingOrdersHavingItem(UUID itemId);
+
+    Boolean existsInCompletedOrders(ItemId itemId);
 }

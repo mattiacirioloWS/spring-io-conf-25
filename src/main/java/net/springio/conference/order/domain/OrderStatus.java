@@ -14,7 +14,7 @@ public final class OrderStatus {
         return new OrderStatus(Status.PENDING);
     }
 
-    static OrderStatus completed() {
+    public static OrderStatus completed() {
         return new OrderStatus(Status.COMPLETED);
     }
 

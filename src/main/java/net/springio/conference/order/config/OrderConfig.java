@@ -16,8 +16,9 @@ public class OrderConfig {
     }
 
     @Bean
-    AddItem addItem(FindAttendees findAttendees, FindSessions findSessions, OrderRepository orderRepository, OrderItemDtoMapper orderItemDtoMapper) {
-        return new AddItem(findAttendees, findSessions, orderRepository, orderItemDtoMapper);
+    AddItem addItem(FindAttendees findAttendees, FindSessions findSessions, OrderRepository orderRepository,
+                    OrderItemDtoMapper orderItemDtoMapper, SinglePurchasePerItemPolicy singlePurchasePerItemPolicy) {
+        return new AddItem(findAttendees, findSessions, orderRepository, orderItemDtoMapper, singlePurchasePerItemPolicy);
     }
 
     @Bean
@@ -33,5 +34,10 @@ public class OrderConfig {
     @Bean
     CancelOrder cancelOrder(OrderRepository orderRepository) {
         return new CancelOrder(orderRepository);
+    }
+
+    @Bean
+    SinglePurchasePerItemPolicy singlePurchasePerItemPolicy(OrderRepository orderRepository) {
+        return new SinglePurchasePerItemPolicy(orderRepository);
     }
 }

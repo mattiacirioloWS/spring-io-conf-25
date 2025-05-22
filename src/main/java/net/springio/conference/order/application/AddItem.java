@@ -15,13 +15,15 @@ public class AddItem {
     private final FindSessions findSessions;
     private final OrderRepository orderRepository;
     private final OrderItemDtoMapper orderItemDtoMapper;
+    private final SinglePurchasePerItemPolicy singlePurchasePerItemPolicy;
 
-    public AddItem(FindAttendees findAttendees, FindSessions findSessions,
-                   OrderRepository orderRepository, OrderItemDtoMapper orderItemDtoMapper) {
+    public AddItem(FindAttendees findAttendees, FindSessions findSessions, OrderRepository orderRepository,
+                   OrderItemDtoMapper orderItemDtoMapper, SinglePurchasePerItemPolicy singlePurchasePerItemPolicy) {
         this.findAttendees = findAttendees;
         this.findSessions = findSessions;
         this.orderRepository = orderRepository;
         this.orderItemDtoMapper = orderItemDtoMapper;
+        this.singlePurchasePerItemPolicy = singlePurchasePerItemPolicy;
     }
 
     public OrderItemDto execute(UUID attendeeId, UUID itemId) {
@@ -34,9 +36,10 @@ public class AddItem {
         SessionDto session = findSessions.findById(itemId)
                 .orElseThrow(() -> new IllegalArgumentException("Session not found"));
 
+        singlePurchasePerItemPolicy.check(item);
+
         Order order = orderRepository.findPendingByAttendee(attendee)
                 .orElse(OrderFactory.createOrder(attendee));
-
 
         OrderItem orderItem = order.addItem(item, new ItemName(session.getTitle()), new Price(session.getPrice()));
         orderRepository.save(order);

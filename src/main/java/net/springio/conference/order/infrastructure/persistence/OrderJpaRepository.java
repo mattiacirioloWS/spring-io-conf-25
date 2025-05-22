@@ -12,4 +12,6 @@ public interface OrderJpaRepository extends JpaRepository<OrderEntity, OrderId> 
     Boolean existsByAttendeeIdAndItemsId(AttendeeId attendeeId, OrderItemId itemId);
 
     List<OrderEntity> findAllByStatusAndItemsItemId(OrderStatus status, ItemId itemId);
+
+    Boolean existsByStatusAndItemsItemId(OrderStatus status, ItemId itemId);
 }
